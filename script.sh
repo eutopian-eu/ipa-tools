@@ -62,7 +62,6 @@ do
         <td>$https</td>
       </tr>
 EOF
-break
 done < $ipa_data
 
 cat >> $index <<EOF
