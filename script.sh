@@ -5,9 +5,9 @@ export OPENSSL_CONF=openssl.cnf
 ipa_url='https://www.indicepa.gov.it/public-services/opendata-read-service.php?dstype=FS&filename=amministrazioni.txt'
 
 # download ipa_url (remove header)
-curl -s "$ipa_url" | tail -n+2 > ipa
+curl -s "$ipa_url" | tail -n+2 | head -1 > ipa
 
-cat <<EOF
+cat > index.html <<EOF
 <html>
   <head>
     <meta charset="utf-8">
@@ -48,7 +48,7 @@ do
     curl -ksSL -D - "https://$url" -o /dev/null > /dev/null
     [[ $? -eq 0 ]] || https="NOT AVAILABLE"
 
-    cat <<EOF
+    cat >> index.html <<EOF
       <tr>
         <th scope="row">$cod_amm</th>
         <td>$des_amm</td>
@@ -58,8 +58,27 @@ do
 EOF
 done < ipa
 
-cat <<EOF
+cat >> index.html <<EOF
     </tbody>
   </body>
 </html>
 EOF
+
+
+## update gh-pages
+
+git config --global user.email "info@eutopian.eu"
+git config --global user.name "Eutopian"
+git config --global credential.helper store
+echo "https://$GIT_ACCESS_TOKEN:x-oauth-basic@github.com" >> ~/.git-credentials
+
+rm -fr /tmp/gh-pages && /tmp/gh-pages
+cd /tmp/gh-pages
+git checkout gh-pages || git checkout --orphan gh-pages
+git rm -rf .
+
+cp -a index.html /tmp/gh-pages
+
+git add -A
+git commit -m "Automated deployment to GitHub Pages" --allow-empty
+git push origin gh-pages
