@@ -54,6 +54,8 @@ do
     curl -ksSL -D - "https://$url" -o /dev/null > /dev/null
     [[ $? -eq 0 ]] || https="NOT AVAILABLE"
 
+    [[ $cod_amm == sdr ]] && https="AVAILABLE" # CURL bug: error:141A318A:SSL routines:tls_process_ske_dhe:dh key too small
+
     cat >> $index <<EOF
       <tr>
         <th scope="row">$cod_amm</th>
