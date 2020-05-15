@@ -1,16 +1,19 @@
 #!/bin/bash
 
 export OPENSSL_CONF=openssl.cnf
+BASEDIR=~/tools
+index=$BASEDIR/index.html
 
 ipa_url='https://www.indicepa.gov.it/public-services/opendata-read-service.php?dstype=FS&filename=amministrazioni.txt'
+ipa_data=$BASEDIR/ipa
 
 # download ipa_url (remove header)
-if [[ ! -e ipa || $(($(date +%s)-$(stat --printf '%Y' ipa))) -gt 3600 ]]
+if [[ ! -e $ipa_data || $(($(date +%s)-$(stat --printf '%Y' $ipa_data))) -gt 3600 ]]
 then
-    curl -s "$ipa_url" | tail -n+2 > ipa
+    curl -s "$ipa_url" | tail -n+2 > $ipa_data
 fi
 
-cat > index.html <<EOF
+cat > $index <<EOF
 <html>
   <head>
     <meta charset="utf-8">
@@ -51,7 +54,7 @@ do
     curl -ksSL -D - "https://$url" -o /dev/null > /dev/null
     [[ $? -eq 0 ]] || https="NOT AVAILABLE"
 
-    cat >> index.html <<EOF
+    cat >> $index <<EOF
       <tr>
         <th scope="row">$cod_amm</th>
         <td>$des_amm</td>
@@ -59,10 +62,10 @@ do
         <td>$https</td>
       </tr>
 EOF
-exit
-done < ipa
+break
+done < $ipa_data
 
-cat >> index.html <<EOF
+cat >> $index <<EOF
     </tbody>
   </body>
 </html>
@@ -76,12 +79,14 @@ git config --global user.name "Eutopian"
 git config --global credential.helper store
 echo "https://$GIT_ACCESS_TOKEN:x-oauth-basic@github.com" >> ~/.git-credentials
 
-rm -fr /tmp/gh-pages && /tmp/gh-pages
+rm -fr /tmp/gh-pages && mkdir /tmp/gh-pages
 cd /tmp/gh-pages
+git clone https://github.com/eutopian-eu/tools.git
+cd tools
 git checkout gh-pages || git checkout --orphan gh-pages
 git rm -rf .
 
-cp -a index.html /tmp/gh-pages
+cp -a $index /tmp/gh-pages/tools
 
 git add -A
 git commit -m "Automated deployment to GitHub Pages" --allow-empty
