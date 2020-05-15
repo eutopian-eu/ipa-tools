@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export OPENSSL_CONF=openssl.cnf
 BASEDIR=~/tools
+export OPENSSL_CONF=~/BASEDIR/openssl.cnf
 index=$BASEDIR/index.html
 
 ipa_url='https://www.indicepa.gov.it/public-services/opendata-read-service.php?dstype=FS&filename=amministrazioni.txt'
