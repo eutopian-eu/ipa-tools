@@ -5,7 +5,7 @@ export OPENSSL_CONF=openssl.cnf
 ipa_url='https://www.indicepa.gov.it/public-services/opendata-read-service.php?dstype=FS&filename=amministrazioni.txt'
 
 # download ipa_url (remove header)
-#curl -s "$ipa_url" | tail -n+2 > ipa
+curl -s "$ipa_url" | tail -n+2 > ipa
 
 cat <<EOF
 <html>
