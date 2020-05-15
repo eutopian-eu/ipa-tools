@@ -5,7 +5,10 @@ export OPENSSL_CONF=openssl.cnf
 ipa_url='https://www.indicepa.gov.it/public-services/opendata-read-service.php?dstype=FS&filename=amministrazioni.txt'
 
 # download ipa_url (remove header)
-curl -s "$ipa_url" | tail -n+2 | head -1 > ipa
+if [[ ! -e ipa || $(($(date +%s)-$(stat --printf '%Y' ipa))) -gt 3600 ]]
+then
+    curl -s "$ipa_url" | tail -n+2 > ipa
+fi
 
 cat > index.html <<EOF
 <html>
@@ -56,6 +59,7 @@ do
         <td>$https</td>
       </tr>
 EOF
+exit
 done < ipa
 
 cat >> index.html <<EOF
@@ -64,8 +68,8 @@ cat >> index.html <<EOF
 </html>
 EOF
 
-
 ## update gh-pages
+[[ -n $GIT_ACCESS_TOKEN ]] || exit 1
 
 git config --global user.email "info@eutopian.eu"
 git config --global user.name "Eutopian"
