@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export OPENSSL_CONF=openssl.cnf
+
 ipa_url='https://www.indicepa.gov.it/public-services/opendata-read-service.php?dstype=FS&filename=amministrazioni.txt'
 
 # download ipa_url (remove header)
@@ -13,6 +15,7 @@ cat <<EOF
     <title>HTTPS per siti PA</title>
   </head>
   <body>
+    <p>Last updated on $(date +'%d/%m/%Y %H:%M:%S %Z')</p>
     <table class="table">
     <thead>
       <tr>
@@ -30,14 +33,23 @@ do
     IFS=$'\t' read -r -a fields <<<"$line"
     tipologia_amm="${fields[11]}"
     [[ "$tipologia_amm" == 'Organi Costituzionali e di Rilievo Costituzionale' || "$tipologia_amm" == 'Presidenza del Consiglio dei Ministri, Ministeri e Avvocatura dello Stato' ]] || continue
+
     cod_amm="${fields[0]}"
     des_amm="${fields[1]}"
+
     >&2 echo "$des_amm"
     url="${fields[8]}"
+
+    # the website of the Ministry of Justice is not up-to-date
+    [[ $cod_amm == m_dg ]] && url=giustizia.it
+
     https="AVAILABLE"
+
     curl -ksSL -D - "https://$url" -o /dev/null > /dev/null
     [[ $? -eq 0 ]] || https="NOT AVAILABLE"
+
     [[ $cod_amm == sdr ]] && https="AVAILABLE" # CURL bug: error:141A318A:SSL routines:tls_process_ske_dhe:dh key too small
+
     cat <<EOF
       <tr>
         <th scope="row">$cod_amm</th>
