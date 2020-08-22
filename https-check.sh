@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Check https://eutopian.eu/en/datalab/https
+
 BASEDIR=~/tools
 export OPENSSL_CONF=~/BASEDIR/openssl.cnf
 index=$BASEDIR/index.html
