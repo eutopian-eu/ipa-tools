@@ -1,0 +1,5 @@
+#!/bin/bash
+
+url="$1"
+
+[[ -n "$url" ]] && curl -ksSL -D - "https://$url" -o /dev/null > /dev/null
