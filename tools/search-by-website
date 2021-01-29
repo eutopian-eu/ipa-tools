@@ -1,0 +1,13 @@
+#!/bin/sh
+
+
+[[ $# -gt 0 ]] || { echo "Please specify a pattern" ; exit 1 ; }
+pattern="$1"
+
+[[ -n $IPA_LDAP_USER ]] || { echo "IPA_LDAP_USER must be set" ; exit 1 ; }
+[[ -n $IPA_LDAP_PASSWORD ]] || { echo "IPA_LDAP_PASSWORD must be set" ; exit 1 ; }
+
+ldapsearch -LLL -x -D "uid=$IPA_LDAP_USER,o=utentildap" \
+    -H ldap://indicepa.gov.it:389/                 \
+    -w "$IPA_LDAP_PASSWORD" -b "c=it"              \
+    -s sub "sitoIstituzionale=*$pattern*" description Acronimo sitoIstituzionale
