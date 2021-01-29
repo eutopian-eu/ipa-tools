@@ -27,7 +27,7 @@ setup(name='ipa-tools',
           'test': ['pytest', 'jsonschema'],
       },
       entry_points="""
-      [console_scripts]
-      ipa-tools=ipa-tools.scripts.cli:cli
-      """
+#      [console_scripts]
+#      ipa-tools=ipa-tools.scripts.cli:cli
+#      """
       )
